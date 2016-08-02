@@ -1,4 +1,4 @@
-# sudoku-solver
+# SUDOKU SOLVER
 
 ## License
 ```
