@@ -1,0 +1,17 @@
+{
+  "name": "all-search-algorithms",
+  "homepage": "https://github.com/iamssurya/all-search-algorithms",
+  "authors": [
+    "surya <iamssurya@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
