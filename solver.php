@@ -1,17 +1,32 @@
 <?php
+/*
+*  1) CHECK THE TABLE IS FULL
+*  2) CHECK IF THE VALUE IS PRESENT IN ROW
+*  3) CHECK IF THE VALUE IS PRESENT IN COLUMN
+*  4) CHECK IF THE VALUE IS PRESENT IN CURRENT 3X3 MATRIX
+*   
+*/
+	$data = (isset($_POST['data']))?$_POST['data']:$_COOKIE['data'];
+	if(isset($_POST['data'])){
+		setcookie('data',$_POST['data']);
+	}
 	
-	$data = (isset($_POST['data']))?$_POST['data']:array(array('0','1'),array('2','4'));
 	$x=0;$y=0;
 	$i=1;
 	for($y=0;$y<9;$y++){
 		for($x=0,$i=1;$x<9;$x++,$i++){
 			if($data[$y][$x] == 0){
+				checkRow($y,$i);
+				checkColumn($x,$i);
+				checkMatrixGrid($x,$y,$i);
+
 				$data[$y][$x] = $i;
 			}
 		}
 		$i=0;
 	}
 	
+
 	function isFull(){
 		for($a=0;$a<9;$a++){
 			for($b=0;$b<9;$b++){
@@ -19,6 +34,26 @@
 			}	
 		}
 		return true;
+	}
+
+	function checkRow($y,$i){
+		for($a=0;$a<9;$a++){
+			if($data[$y][$a] == $i){
+				return false;
+			}
+		}
+		return true;
+	}
+	function checkColumn($x,$i){
+		for($a=0;$a<9;$a++){
+			if($data[$a][$x] == $i){
+				return false;
+			}
+		}
+		return true;
+	}
+	function checkMatrixGrid($x,$y,$i){
+		
 	}
 
 	echo json_encode($data);
