@@ -14,18 +14,27 @@
 	$x=0;$y=0;
 	$i=1;
 	for($y=0;$y<9;$y++){
-		for($x=0,$i=1;$x<9;$x++,$i++){
+		for($x=0;$x<9;$x++){
 			if($data[$y][$x] == 0){
-				checkRow($y,$i);
-				checkColumn($x,$i);
-				checkMatrixGrid($x,$y,$i);
-
-				$data[$y][$x] = $i;
+				
+				$val = recursiveFill($y,$x);
+				$data[$y][$x] = $val;
 			}
 		}
 		$i=0;
 	}
 	
+	function recursiveFill($y,$x){
+		while($i<=9){
+			if(checkRow($y,$i) && checkColumn($x,$i) && checkMatrixGrid($x,$y,$i)){
+				print 'pass';
+				return $i;
+			}else{
+				print 'fail';
+				$i++;
+			}
+		}
+	}
 
 	function isFull(){
 		for($a=0;$a<9;$a++){
@@ -52,8 +61,9 @@
 		}
 		return true;
 	}
+	//
 	function checkMatrixGrid($x,$y,$i){
-		
+		return true;
 	}
 
 	echo json_encode($data);
