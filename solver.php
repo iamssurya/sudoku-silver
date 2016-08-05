@@ -6,65 +6,97 @@
 *  4) CHECK IF THE VALUE IS PRESENT IN CURRENT 3X3 MATRIX
 *   
 */
-	$data = (isset($_POST['data']))?$_POST['data']:$_COOKIE['data'];
+/*
 	if(isset($_POST['data'])){
 		setcookie('data',$_POST['data']);
-	}
-	//echo $data[0][0];
+	}*/
+	//ini_set('memory_limit', '4000M');
+	ini_set ('max_execution_time', 0);
+	$data = (isset($_POST['data']))?$_POST['data']:$_COOKIE['data'];
+	
+	$currentX = 0;$currentY = 0;$ignoreN;
 	$stack = array();
-	$x=0;$y=0;
-	$i=1;
-	$currentX =0;
-	$currentY = 0;
-	$currentI = 1;
-	function isFull(){
+	// Staring the algorithm
+
+	//findEmptyGrid($currentX,$currentY,0);
+
+	// Check if the sudoku is solved
+	function sudokuSolved(){
 		global $data;
-		for($a=0;$a<9;$a++){
-			for($b=0;$b<9;$b++){
-				if($data[$a][$b] == 0) { return 0;}
-			}	
-		}
-		return 1;
-	}
-
-	fillGrid($currentX,$currentY,$currentI);
-
-	function fillGrid($currentX,$currentY,$currentI){
-		global $data,$currentI,$stack;
-		for($y=$currentY;$y<9;$y++){
-			for($x=$currentX;$x<9;$x++){
+		for($y=0;$y<9;$y++){
+			for($x=0;$x<9;$x++){
 				if($data[$y][$x] == 0){
-					$resp = recursiveFill($y,$x,$currentI);
-
+					return 0;
 				}
 			}
 		}
-		if(isFull() == 0){
-			//fillGrid();
-			//print 'isnotfull';
-		}
+		return 1;
 	}
-	
-	
-	
-	function recursiveFill($y,$x,$index){
-		global $data,$currentI,$stack;
-		//$index = 1;
-		while($index < 10){
-			if((checkRow($y,$index) == 1) && (checkColumn($x,$index) == 1) && (checkMatrixGrid($x,$y,$index) == 1)){
-				$data[$y][$x] = $index;
-				array_push($stack, array('y'=>$y,'x'=>$x,'i'=>$index));
-				return 1;
-				
-			}else{
-				$index++;
+	function findEmptyGrid($currentY,$currentX,$i_n){
+		global $data,$stack;
+		for($y=$currentY;$y<9;$y++){
+			for($x=$currentX;$x<9;$x++){
+				if($data[$y][$x] == 0){
+					//print "Checking ($y,$x)";
+					$ans = fillGrid($y,$x,$i_n);
+					//print "ans : $ans";
+				}
 			}
 		}
-
-		
-		popLatest();
 	}
+	function fillGrid($y,$x,$i_n){
+		global $data,$stack;
+		for($i=1;$i<10;$i++){
+			if($i != $i_n){
+				if((checkRow($y,$i) == 1) && (checkColumn($x,$i)==1) && (checkMatrixGrid($x,$y,$i)==1)){
+					empty($data[$y][$x]);
+					$data[$y][$x] = $i;
+					
+					array_push($stack,array('x'=>$x,'y'=>$y,'i'=>$i));
+					return 1;
+				}
+			}
+			if($i == 9){
+				// Backtracks
+				//return -1;
+				//findEmptyGrid($stack[count($stack) - 1]['x'],$stack[count($stack) - 1]['y'],$stack[count($stack)-1]['i']);
+				//findEmptyGrid(0,0,0);
+				$y_val = $stack[count($stack) - 1]['y'];
+				$x_val = $stack[count($stack) - 1]['x'];
+				$i_val = $stack[count($stack) - 1]['i'];
+				array_pop($stack);
+				$result = fixGrid($y_val,$x_val,$i_val);
+				return $result;
+				
 
+				
+			}
+		}
+	}
+	function fixGrid($y,$x,$i){
+		global $data;
+		for($a=1;$a<=9;$a++){
+			if($a != $i){
+				if((checkRow($y,$i) == 1) && (checkColumn($x,$i)==1) && (checkMatrixGrid($x,$y,$i)==1)){
+					empty($data[$y][$x]);
+					$data[$y][$x] = $i;
+					
+					array_push($stack,array('x'=>$x,'y'=>$y,'i'=>$i));
+					return 1;
+				}
+			}
+			if($a==9){
+				$y_val = $stack[count($stack) - 1]['y'];
+				$x_val = $stack[count($stack) - 1]['x'];
+				$i_val = $stack[count($stack) - 1]['i'];
+				array_pop($stack);
+				$result = fixGrid($y_val,$x_val,$i_val);
+				if($result == 1){
+					return 1;
+				}
+			}
+		}
+	}
 	function checkRow($ya,$in){
 		global $data;
 		$ya = $ya;
@@ -107,10 +139,9 @@
 			$y_axis = 3;
 			$y_max = 6;
 		}else{ $y_axis = 6; $y_max = 9;}
-		//echo "xaxis ".$x_axis+30." and yaxis $y_axis";
+		
 		for($a=$y_axis;$a<$y_max;$a++){
 			for($b=$x_axis;$b<$x_max;$b++){
-				//echo 'comparing ($a,$b) : $data[$a][$b] with $in';
 				if($data[$a][$b] == $in){
 					return 0;
 				}
@@ -118,18 +149,12 @@
 		}
 		return 1;
 	}
-
-	function popLatest(){
-		global $data,$stack,$currentX,$currentY,$currentI;
-		//echo $stack[count($stack)-1]['x'];
-		
-		$currentX = $stack[count($stack)-1]['x'];
-		$currentY = $stack[count($stack)-1]['y'];
-		$currentI = $stack[count($stack)-1]['i'] + 1;
-
-		array_pop($stack);
-		fillGrid($currentY, $currentX, $currentI);
-
-	}
+	
+	findEmptyGrid(0,0,0);
+	
+	
+	
+	
+	
 	echo json_encode($data);
 ?>

@@ -117,7 +117,8 @@
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-		
+		var global = {};
+
 		var solve = function(){
 			
 			var data = [];
@@ -129,22 +130,11 @@
 		        data.push(cols);
 		    });
 		   	
-		   	$.ajax({
-		   		url: 'solver3.php',
-		   		data: {data: data},
-		   		method: 'POST',
-		   		success: function(response,status){
-		   			console.log(response);
-		   			var resp = JSON.parse(response);
-		   			$('table').find('tr').each(function(rowIndex,r){
-		   				$(this).find('th,td').each(function (colIndex, c) {
-		   					c.children[0].value = resp[rowIndex][colIndex];
-				        });
-		   			});
-		   		}
-		   	})
-
+		   	global.data = data;
+		   	global.solveSudoku();
+		   	
 		}
 	</script>
+	<script type="text/javascript" src="solve.js"></script>
 </body>
 </html>
